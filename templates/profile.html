@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="shortcut icon" href="/static/images/shuttle.ico" type="image/x-icon">
+  <title>Space Racer: Profile Page</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+   <body>
+   	<ul id="nav">
+         <li id="nav-item"><a href="{{ url_for('about') }}" id="nav-a">About</a></li>
+          <li id="nav-item"><a href="{{ url_for('logout') }}" id="nav-a">Logout</a></li>
+         <li id="nav-item"><a href="{{ url_for('home') }}" id="nav-a">Home</a></li>
+    </ul>
+    <br><br>
+
+    <h1>Profile Page</h1>
+    <div id="top">
+    	<h2>{{username}}</h2>
+    	<h2>WPM: <b id="wpm">{{avg}}</b></h2>
+    	<h2>Races complete: {{total}}</h2>
+    </div>
+    <div id="curve_chart"></div>
+    <p id="inv">{{wpm}}</p>
+</body>
+<head>
+  <script type="text/javascript">
+
+    var w = document.getElementById("inv").innerHTML.split(" ");
+    if (w.length != 0) {
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+    }
+
+    function drawChart() {
+
+      if (w != null) {
+  
+        var arr = [['', 'WPM']];
+  
+        for (var i = 0; i < w.length; i++) {
+          arr.push(new Array('',  parseInt(w[i])));
+        }
+        
+        var data = google.visualization.arrayToDataTable(arr);
+  
+        var options = {
+          curveType: 'function',
+          legend: { position: 'bottom' },
+          backgroundColor: {
+            fill: '#161512'
+          },
+          chartArea: {
+            backgroundColor: {
+              fill: '#FFFFFF',
+              fillOpacity: 0.1
+            }
+          }
+        };
+  
+          var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+  
+          chart.draw(data, options);
+      }
+    }
+  </script>
+</head>
+</html>

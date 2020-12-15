@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <link rel="shortcut icon" href="/static/images/shuttle.ico" type="image/x-icon">
+ 	<title>Space Racer: Signup Page</title>
+ 	<link rel="stylesheet" href="{{ url_for('static', filename='css/loginSignup.css') }}">
+</head>
+<body>
+    <ul id="nav">
+         <li id="nav-item"><a href="{{ url_for('about') }}" id="nav-a">About</a></li>
+         <li id="nav-item"><a href="{{ url_for('home') }}" id="nav-a">Home</a></li>
+    </ul>
+    <br><br>
+  	<form class="form-signin" method="POST" action="/signup">
+    	<h1 class="form-signin-heading">Signup Page</h1>
+    	{{form.hidden_tag()}}
+    	<h3>Username</h3>
+    	{{form.username}}
+    	<br>
+    	<h3>Email</h3>
+    	{{form.email}}
+    	<br>
+    	<h3>Password</h3>
+    	{{form.password}}
+    	<br><br>
+    	<button class="btn btn-lg btn-primary btn-block" type="submit">Signup</button>
+  	</form>
+</body>
+</html>

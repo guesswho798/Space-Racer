@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Spacer Racer: Home</title>
+      <link rel="shortcut icon" href="/static/images/shuttle.ico" type="image/x-icon">
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/lobby.css') }}">
+      <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+      <script type="text/javascript" charset="utf-8">
+
+         // socket
+         var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+         // listener function to log everything the server sends
+         socket.on('listener', function(data) {
+            //console.log(data);
+         });
+
+         // joining a waiting room
+         function func(number){
+            
+            if(number == "guess")
+               window.location.href = "https://guesswho798.github.io/";
+            else
+               socket.emit("get room", {"room name": number, "username": document.getElementById("username").innerHTML});
+         }
+         
+         socket.on('room asign', function(data) {
+            window.location.href = "/waiting/" + data;});
+
+      </script>
+   </head>
+   <body>
+      <p id="username" hidden>{{username}}</p>
+
+      <ul id="nav">
+         <li id="nav-item"><a href="{{ url_for('about') }}" id="nav-a">About</a></li>
+         {% if username %}
+            <li id="nav-item"><a href="{{ url_for('logout') }}" id="nav-a">Logout</a></li>
+            <li id="nav-item"><a href="{{ url_for('profile') }}" id="nav-a">{{username}}</a></li>
+         {% else %}
+            <li id="nav-item"><a href="{{ url_for('profile') }}" id="nav-a">Login</a></li>
+            <li id="nav-item"><a href="{{ url_for('signup') }}" id="nav-a">Signup</a></li>
+         {% endif %}
+         <li id="nav-item"><a href="#" id="nav-a">Home</a></li>
+      </ul>
+      <br><br>
+      <h1>Space Racer</h1>
+      <p>Welcome to <em>Space Racer</em>, here you can practice in the Endless Pratice section</p>
+      <p>to warm up and start playing right away with other users.</p>
+      <div class="outer-grid-container">
+         <div class="score">
+            <h4>Top Players</h4>
+            <ol>
+               <li>{{f}}</li>
+               <li>{{s}}</li>
+               <li>{{t}}</li>
+            </ol>
+         </div> 
+         <div class="inner-grid-container">
+            <div class="inner-grid-item" onclick="func('2z00')" style="cursor: pointer">1V1<br>Blitz</div>
+            <div class="inner-grid-item" onclick="func('3z00')" style="cursor: pointer">1V1V1<br>Blitz</div>
+            <div class="inner-grid-item" onclick="func('4z00')" style="cursor: pointer">2V2<br>Blitz</div>
+            <div class="inner-grid-item" onclick="func('2r00')" style="cursor: pointer">1V1<br>Rapid</div>
+            <div class="inner-grid-item" onclick="func('3r00')" style="cursor: pointer">1V1V1<br>Rapid</div>
+            <div class="inner-grid-item" onclick="func('4r00')" style="cursor: pointer">2V2<br>Rapid</div>
+            <div class="inner-grid-item" onclick="func('2c00')" style="cursor: pointer">1V1<br>Classical</div>
+            <div class="inner-grid-item" onclick="func('3c00')" style="cursor: pointer">1V1V1<br>Classical</div>
+            <div class="inner-grid-item" onclick="func('4c00')" style="cursor: pointer">2V2<br>Classical</div>
+            <div class="inner-grid-item" onclick="func('add later')" style="cursor: pointer">Endless<br>Practice</div>
+            <div class="inner-grid-item" onclick="func('add later')" style="cursor: pointer">Private<br>Match</div>
+            <div class="inner-grid-item" id="yellow" onclick="func('guess')">Type<br>Racer</div>
+         </div>
+         <div class="Item3">
+            <h4>The Daily Riddle</h4>
+            <p>What has to be broken before you can use it?</p>
+         </div>
+      </div>
+   </body>
+</html>

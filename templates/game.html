@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="shortcut icon" href="/static/images/shuttle.ico" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/game.css') }}">
+  	<title>Space Racer: In Game</title> 
+</head>
+<body>
+
+  <p id="username" hidden>{{username}}</p>
+
+  <div id="wait">
+    <div id='stars'></div>
+    <div id='title'>
+    <span>Waiting...</span>
+    </div>
+  </div>
+
+  <div id="racerw">
+    <div id="rnf"></div>
+    <div id="rnb"></div>
+  </div>
+
+
+</body>
+  <head>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+    <script>
+
+
+      var socket = io.connect('http://' + document.domain + ':' + location.port);
+      var play = false;
+      var selector = 0;
+      var opponentSelector = {};
+      var sentence = "";
+      var username = document.getElementById("username").innerHTML;
+      var t0 = null;
+
+      socket.on('connect', function() {
+        socket.emit('join', {'username': username, "room name": window.location.pathname.slice(9)});
+      });
+      
+      socket.on('selector sender', function(data) {
+        if (data['username'] != username) {
+          if (opponentSelector[data['username']] == null) {
+            opponentSelector[data['username']] = 1;
+            if (document.getElementById('car2') != null)
+              document.getElementById('car2').setAttribute('id', data['username']);
+            else if (document.getElementById('car3') != null)
+              document.getElementById('car3').setAttribute('id', data['username']);
+            else if (document.getElementById('car4') != null)
+              document.getElementById('car4').setAttribute('id', data['username']);
+          }
+          else{
+          opponentSelector[data['username']] = opponentSelector[data['username']] + 1;
+          }
+          document.getElementById(data['username']).style.margin = '0 0 0 ' + 90*opponentSelector[data['username']]/sentence.split(' ').length+'%';
+          //console.log(data['username'] + " | " + opponentSelector[data['username']]);
+        }
+
+        if (opponentSelector[data['username']] == sentence.split(' ').length) {
+          //console.log(data['username'] + " is done!");
+        }
+      });
+
+      // listener function to log everything the server sends
+      socket.on('listener', function(data) {
+
+        //console.log(data);
+        
+        if (data.length > 10){
+
+          //console.log("Users: " + document.getElementById("users").innerHTML);
+
+          var pictureName1 = "{{ url_for('static', filename='images/ships1.png') }}";
+          var pictureName2 = "{{ url_for('static', filename='images/ships2.png') }}";
+          var pictureWidth = "80px";
+          var pictureHeight = "40px";
+
+
+          // starting to count time to calculate time
+          t0 = performance.now();
+
+          play = true;
+
+          // adding elements
+          var p = document.getElementById("racerw");
+          var h = document.createElement("h1");
+          // spaceship 1 & 2
+          var img1 = document.createElement('img');
+          var b1 = document.createElement("br");
+          var b2 = document.createElement("br");
+          var img2 = document.createElement('img');
+          var b3 = document.createElement("br");
+          var b4 = document.createElement("br");
+          // spaceship 3
+          if (window.location.pathname.slice(9,10) == "3") {
+            var img3 = document.createElement('img');
+            var b7 = document.createElement("br");
+            var b8 = document.createElement("br");
+          }
+          // spaceship 4
+          if (window.location.pathname.slice(9,10) == "4") {
+            var img3 = document.createElement('img');
+            var b7 = document.createElement("br");
+            var b8 = document.createElement("br");
+            var img4 = document.createElement('img');
+            var b9 = document.createElement("br");
+            var b10 = document.createElement("br");
+          }
+          // green and white text, input bar and exit button
+          var b5 = document.createElement("br");
+          var w = document.createElement("p");
+          var g = document.createElement("p");
+          var b6 = document.createElement("br");
+          var t = document.createElement("input");
+          var b11 = document.createElement("br");
+          var back = document.createElement('div');
+
+
+          // setting ids
+          p.setAttribute('id', "racer");
+          img1.setAttribute('id', "car1");
+          img1.src = pictureName1;
+          img1.style.width = pictureWidth;
+          img1.style.height = pictureHeight;
+          img2.setAttribute('id', "car2");
+          img2.src = pictureName2;
+          img2.style.width = pictureWidth;
+          img2.style.height = pictureHeight;
+          if (window.location.pathname.slice(9,10) == "3") {
+            img3.setAttribute('id', "car3");
+            img3.src = pictureName1;
+            img3.style.width = pictureWidth;
+            img3.style.height = pictureHeight;
+          }
+          if (window.location.pathname.slice(9,10) == "4") {
+            img3.setAttribute('id', "car3");
+            img3.src = pictureName1;
+            img3.style.width = pictureWidth;
+            img3.style.height = pictureHeight;
+            img4.setAttribute('id', "car4");
+            img4.src = pictureName2;
+            img4.style.width = pictureWidth;
+            img4.style.height = pictureHeight;
+          }
+          w.setAttribute('id', "white");
+          g.setAttribute('id', "green");
+          t.setAttribute('id', "t");
+          t.setAttribute('autocomplete', "off");
+          back.setAttribute('id', "back");
+          back.setAttribute('onclick', "back()");
+  
+          // setting values
+          h.innerHTML = "Type Racer";
+          w.innerHTML = data.slice(4);
+          sentence = data.slice(4);
+          g.innerHTML = "";
+          back.innerHTML = "abandon ship!";
+      
+
+          // background
+          var rf = document.getElementById("rnf");
+          var rb = document.getElementById("rnb");
+          rf.setAttribute('class', "rain front-row");
+          rb.setAttribute('class', "rain back-row");
+          makeItRain();
+
+
+          // adding to div
+          p.appendChild(h);
+          p.appendChild(img1);
+          p.appendChild(b1);
+          p.appendChild(b2);
+          p.appendChild(img2);
+          p.appendChild(b3);
+          p.appendChild(b4);
+          if (window.location.pathname.slice(9,10) == "3") {
+            p.appendChild(img3);
+            p.appendChild(b7);
+            p.appendChild(b8);
+          }
+          if (window.location.pathname.slice(9,10) == "4") {
+            p.appendChild(img3);
+            p.appendChild(b7);
+            p.appendChild(b8);
+            p.appendChild(img4);
+            p.appendChild(b9);
+            p.appendChild(b10);
+          }
+          p.appendChild(b5);
+          p.appendChild(g);
+          p.appendChild(w);
+          p.appendChild(b6);
+          p.appendChild(t);
+          p.appendChild(b11);
+          p.appendChild(back);
+
+          // get elements
+          var parent = document.getElementById("wait");
+
+          // Delete elements
+          parent.remove();
+        }
+      });
+
+// animation
+var makeItRain = function() {
+  //clear out everything
+  //document.getElementsByClassName('.rain').empty();
+
+  var increment = 0;
+  var drops = "";
+  var backDrops = "";
+
+  while (increment < 50) {
+    //couple random numbers to use for various randomizations
+    //random number between 98 and 1
+    var randoHundo = (Math.floor(Math.random() * (98 - 1 + 1) + 1));
+    //random number between 5 and 2
+    var randoFiver = (Math.floor(Math.random() * (5 - 2 + 1) + 2));
+    //increment
+    increment += randoFiver;
+
+    //add in a new raindrop with various randomizations to certain CSS properties
+    drops += '<div class="drop" style="right: -25%; top: ' + (randoHundo) + '%; animation-delay: 0.' + randoFiver*2 + 's; animation-duration: 1s;"><div class="stem" style="animation-delay: 0.' + randoHundo + 's; animation-duration: 0.5' + randoHundo + 's;"></div></div>';
+
+    backDrops += '<div class="drop" style="right: -25%; top: ' + (randoHundo) + '%; animation-delay: 0.' + randoFiver*2 + 's; animation-duration: 1s;"><div class="stem" style="animation-delay: 0.' + randoHundo + 's; animation-duration: 0.5' + randoHundo + 's;"></div></div>';
+  }
+
+  document.getElementById('rnf').innerHTML += drops;
+  document.getElementById('rnb').innerHTML += backDrops;
+}
+
+setInterval(function () {
+  if(play == false)
+    return;
+
+  document.getElementById('t').focus();
+  if (document.getElementById("t").value == " ") {
+    document.getElementById("t").value = '';
+  }
+
+  // cheking each letter and letting the user know he made a mistake
+  if (document.getElementById("t").value.length != 0)
+    if (sentence.split(' ')[selector].slice(0, document.getElementById("t").value.length) != document.getElementById("t").value)
+      document.getElementById("t").style.backgroundColor = "red";
+    else
+      document.getElementById("t").style.backgroundColor = "white";
+  else
+    document.getElementById("t").style.backgroundColor = "white";
+}, 1);
+
+document.body.onkeypress = function (e) {
+
+  // checking answer after the space bar is pressed
+  if (e.keyCode == 32 && play == true) {
+    check_Word(t);
+  }
+}
+
+function check_Word(t) {
+
+  var input_box = document.getElementById("t");
+
+  // checking if the input is the same as the focused word
+  if (input_box.value == sentence.split(' ')[selector]) {
+
+    // advancing the word selector
+    selector = selector + 1;
+    // sending server information
+    socket.emit('selector', {'username': username, "room name": window.location.pathname.slice(9)});
+
+    //console.log(selector / sentence.split(' ').length);
+    document.getElementById('car1').style.margin = '0 0 0 ' + 90*selector/sentence.split(' ').length+'%';
+    // clearing the input bar
+    input_box.value = '';
+
+    // the sentence diplayed is splited into two elements,
+    // the first one is green displaying all the words that were written all ready
+    // and the second one is displaying the rest of the sentece in white.
+    document.getElementById("green").innerHTML = "";
+    document.getElementById("white").innerHTML = "";
+    var s3 = sentence.split(' ');
+    for (var i = 0; i < s3.length; i++)
+      if (i < selector)
+        document.getElementById("green").innerHTML += s3[i] + " ";
+      else
+        document.getElementById("white").innerHTML += s3[i] + " ";
+  }
+
+  // disabling input box if sentence is done
+  if (selector == sentence.split(' ').length) {
+    input_box.style.backgroundColor = "white";
+    input_box.disabled = true;
+
+    // calculating time
+    var totalTime = sentence.split(' ').length/(Math.floor((performance.now() - t0)/1000)/60);
+    socket.emit('finish', {"wpm":totalTime, "room name": window.location.pathname.slice(9)});
+    //window.location.href="{{ url_for('home') }}";
+
+    document.getElementById("rnb").remove();
+    document.getElementById("rnf").remove();
+    document.getElementById("t").remove();
+    document.getElementById("white").remove();
+    document.getElementById("back").innerHTML = "Back To Lobby";
+    play = false;
+  }
+}
+
+function back(){
+  //alert("sending");
+  socket.emit('exit', {"room name": window.location.pathname.slice(9)});
+  window.location.href="{{ url_for('home') }}";
+}
+
+    </script>
+  </head>
+</html>
