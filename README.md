@@ -3,7 +3,7 @@
  In Space Racer, you can see your typing stats and track your progress in your profile page.  
  [Trello board](https://trello.com/b/A06iBaBZ/%D7%A4%D7%A8%D7%95%D7%99%D7%99%D7%A7%D7%98)  
 ## Main Page  
-![Main Page](https://github.com/guesswho798/Space-Racer/blob/main/static/images/main%20page.png)  
+![Main Page](https://github.com/guesswho798/Space-Racer/blob/main/static/images/Main%20Page.png)  
 ## In Game  
 ![Game Page](https://github.com/guesswho798/Space-Racer/blob/main/static/images/game.png)  
 ## Profile Page  
