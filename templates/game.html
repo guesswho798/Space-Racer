@@ -34,6 +34,8 @@
       var opponentSelector = {};
       var sentence = "";
       var username = document.getElementById("username").innerHTML;
+      var users;
+      var place = 1;
       var t0 = null;
 
       socket.on('connect', function() {
@@ -41,25 +43,34 @@
       });
       
       socket.on('selector sender', function(data) {
+
+        // setting the cars names
+        if (document.getElementById('car2') != null)
+          if (users[0] == username) 
+           document.getElementById('car2').setAttribute('id', users[1]);
+          else
+           document.getElementById('car2').setAttribute('id', users[0]);
+        if (users.length > 3 && document.getElementById('car3') != null)
+          if (users[1] == username) 
+           document.getElementById('car2').setAttribute('id', users[2]);
+          else
+           document.getElementById('car2').setAttribute('id', users[1]);
+
+
+        // why do i keep them seperate?
         if (data['username'] != username) {
-          if (opponentSelector[data['username']] == null) {
+          if (opponentSelector[data['username']] == null) 
             opponentSelector[data['username']] = 1;
-            if (document.getElementById('car2') != null)
-              document.getElementById('car2').setAttribute('id', data['username']);
-            else if (document.getElementById('car3') != null)
-              document.getElementById('car3').setAttribute('id', data['username']);
-            else if (document.getElementById('car4') != null)
-              document.getElementById('car4').setAttribute('id', data['username']);
-          }
-          else{
-          opponentSelector[data['username']] = opponentSelector[data['username']] + 1;
-          }
-          document.getElementById(data['username']).style.margin = '0 0 0 ' + 90*opponentSelector[data['username']]/sentence.split(' ').length+'%';
-          //console.log(data['username'] + " | " + opponentSelector[data['username']]);
+          else
+            opponentSelector[data['username']] = opponentSelector[data['username']] + 1;
+          
+
+          document.getElementById(data['username']).style.margin = '0 0 0 ' + 65*opponentSelector[data['username']]/sentence.split(' ').length+'%';
         }
 
         if (opponentSelector[data['username']] == sentence.split(' ').length) {
-          //console.log(data['username'] + " is done!");
+          document.getElementById(data['username'] + "end").innerHTML = place + "th place";
+          place++;
         }
       });
 
@@ -67,44 +78,48 @@
       socket.on('listener', function(data) {
 
         //console.log(data);
+        //console.log(document.getElementById("users").innerHTML);
         
         if (data.length > 10){
 
-          //console.log("Users: " + document.getElementById("users").innerHTML);
-
+          // loading pictures
           var pictureName1 = "{{ url_for('static', filename='images/ships1.png') }}";
           var pictureName2 = "{{ url_for('static', filename='images/ships2.png') }}";
           var pictureWidth = "80px";
           var pictureHeight = "40px";
 
-
-          // starting to count time to calculate time
-          t0 = performance.now();
-
-          play = true;
-
           // adding elements
           var p = document.getElementById("racerw");
           var h = document.createElement("h1");
           // spaceship 1 & 2
+          var name1 = document.createElement('p');
           var img1 = document.createElement('img');
+          var endname1 = document.createElement('p');
           var b1 = document.createElement("br");
           var b2 = document.createElement("br");
+          var name2 = document.createElement('p');
           var img2 = document.createElement('img');
+          var endname2 = document.createElement('p');
           var b3 = document.createElement("br");
           var b4 = document.createElement("br");
           // spaceship 3
           if (window.location.pathname.slice(9,10) == "3") {
+            var name3 = document.createElement('p');
             var img3 = document.createElement('img');
+            var endname3 = document.createElement('p');
             var b7 = document.createElement("br");
             var b8 = document.createElement("br");
           }
           // spaceship 4
           if (window.location.pathname.slice(9,10) == "4") {
+            var name3 = document.createElement('p');
             var img3 = document.createElement('img');
+            var endname3 = document.createElement('p');
             var b7 = document.createElement("br");
             var b8 = document.createElement("br");
+            var name4 = document.createElement('p');
             var img4 = document.createElement('img');
+            var endname4 = document.createElement('p');
             var b9 = document.createElement("br");
             var b10 = document.createElement("br");
           }
@@ -117,33 +132,7 @@
           var b11 = document.createElement("br");
           var back = document.createElement('div');
 
-
-          // setting ids
-          p.setAttribute('id', "racer");
-          img1.setAttribute('id', "car1");
-          img1.src = pictureName1;
-          img1.style.width = pictureWidth;
-          img1.style.height = pictureHeight;
-          img2.setAttribute('id', "car2");
-          img2.src = pictureName2;
-          img2.style.width = pictureWidth;
-          img2.style.height = pictureHeight;
-          if (window.location.pathname.slice(9,10) == "3") {
-            img3.setAttribute('id', "car3");
-            img3.src = pictureName1;
-            img3.style.width = pictureWidth;
-            img3.style.height = pictureHeight;
-          }
-          if (window.location.pathname.slice(9,10) == "4") {
-            img3.setAttribute('id', "car3");
-            img3.src = pictureName1;
-            img3.style.width = pictureWidth;
-            img3.style.height = pictureHeight;
-            img4.setAttribute('id', "car4");
-            img4.src = pictureName2;
-            img4.style.width = pictureWidth;
-            img4.style.height = pictureHeight;
-          }
+          // setting attributes of elements
           w.setAttribute('id', "white");
           g.setAttribute('id', "green");
           t.setAttribute('id', "t");
@@ -153,11 +142,61 @@
   
           // setting values
           h.innerHTML = "Type Racer";
-          w.innerHTML = data.slice(4);
-          sentence = data.slice(4);
+          sentence = data.split("|join")[1];
+          w.innerHTML = sentence;
+          users = data.split('|');
           g.innerHTML = "";
           back.innerHTML = "abandon ship!";
-      
+
+          // setting ids
+          p.setAttribute('id', "racer");
+          img1.setAttribute('id', "car1");
+          name1.setAttribute('class', "name");
+          endname1.setAttribute('class', "name");
+          endname1.setAttribute('id', username + "end");
+          name1.innerHTML = username;
+          img1.src = pictureName1;
+          img1.style.width = pictureWidth;
+          img1.style.height = pictureHeight;
+          img2.setAttribute('id', "car2");
+          name2.setAttribute('class', "name");
+          endname2.setAttribute('class', "name");
+          if (users[0] == username){
+            endname2.setAttribute('id', users[1] + "end");
+            name2.innerHTML = users[1];
+          }
+          else{
+            endname2.setAttribute('id', users[0] + "end");
+            name2.innerHTML = users[0];
+          }
+          img2.src = pictureName2;
+          img2.style.width = pictureWidth;
+          img2.style.height = pictureHeight;
+          if (window.location.pathname.slice(9,10) == "3") {
+            name3.setAttribute('class', "name");
+            name3.innerHTML = users[2];
+            endname3.setAttribute('class', "name");
+            img3.setAttribute('id', "car3");
+            img3.src = pictureName1;
+            img3.style.width = pictureWidth;
+            img3.style.height = pictureHeight;
+          }
+          if (window.location.pathname.slice(9,10) == "4") {
+            name3.setAttribute('class', "name");
+            name3.innerHTML = users[2];
+            endname3.setAttribute('class', "name");
+            img3.setAttribute('id', "car3");
+            img3.src = pictureName1;
+            img3.style.width = pictureWidth;
+            img3.style.height = pictureHeight;
+            name4.setAttribute('class', "name");
+            name4.innerHTML = users[3];
+            endname4.setAttribute('class', "name");
+            img4.setAttribute('id', "car4");
+            img4.src = pictureName2;
+            img4.style.width = pictureWidth;
+            img4.style.height = pictureHeight;
+          }
 
           // background
           var rf = document.getElementById("rnf");
@@ -169,22 +208,32 @@
 
           // adding to div
           p.appendChild(h);
+          p.appendChild(name1);
           p.appendChild(img1);
+          p.appendChild(endname1);
           p.appendChild(b1);
           p.appendChild(b2);
+          p.appendChild(name2);
           p.appendChild(img2);
+          p.appendChild(endname2);
           p.appendChild(b3);
           p.appendChild(b4);
           if (window.location.pathname.slice(9,10) == "3") {
+            p.appendChild(name3);
             p.appendChild(img3);
+            p.appendChild(endname3);
             p.appendChild(b7);
             p.appendChild(b8);
           }
           if (window.location.pathname.slice(9,10) == "4") {
+            p.appendChild(name3);
             p.appendChild(img3);
+            p.appendChild(endname3);
             p.appendChild(b7);
             p.appendChild(b8);
+            p.appendChild(name4);
             p.appendChild(img4);
+            p.appendChild(endname4);
             p.appendChild(b9);
             p.appendChild(b10);
           }
@@ -201,6 +250,13 @@
 
           // Delete elements
           parent.remove();
+
+          // setting the space ships to the same x value
+
+
+          // starting to count time to calculate time
+          t0 = performance.now();
+          play = true;
         }
       });
 
@@ -272,7 +328,7 @@ function check_Word(t) {
     socket.emit('selector', {'username': username, "room name": window.location.pathname.slice(9)});
 
     //console.log(selector / sentence.split(' ').length);
-    document.getElementById('car1').style.margin = '0 0 0 ' + 90*selector/sentence.split(' ').length+'%';
+    document.getElementById('car1').style.margin = '0 0 0 ' + 65*selector/sentence.split(' ').length+'%';
     // clearing the input bar
     input_box.value = '';
 
@@ -297,7 +353,8 @@ function check_Word(t) {
     // calculating time
     var totalTime = sentence.split(' ').length/(Math.floor((performance.now() - t0)/1000)/60);
     socket.emit('finish', {"wpm":totalTime, "room name": window.location.pathname.slice(9)});
-    //window.location.href="{{ url_for('home') }}";
+    document.getElementById(username + "end").innerHTML = place + "th place<br>(" + Math.round(totalTime) + " WPM)";
+    place++;
 
     document.getElementById("rnb").remove();
     document.getElementById("rnf").remove();

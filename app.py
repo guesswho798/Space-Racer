@@ -73,18 +73,23 @@ def on_join(data):
 	room_name = data['room name']
 	username = data['username']
 
-	#print("trying to join: " + request.sid)
-	#if request.sid != u[username]:
-	#	print(current_user.username + " is not allowed to join")
-	#	return
-
-	#print(current_user.username + " is joining " + room_name)
+	# if the room exists
+	if room_name in r:
+		# running through all active users
+		for x in r[room_name][2]:
+			# if user is already active then not letting him join again
+			if current_user.username == x:
+				join_room(room_name)
+				return
 
 	while(True):
+	
 		# if the room exists
 		if room_name in r:
 			# if the room is waiting for players
 			if r[room_name][1] == False:
+
+				# adding user to room
 				r[room_name][0] = r[room_name][0] + 1
 				r[room_name][2].append(str(current_user.username))
 				join_room(room_name)
@@ -96,6 +101,8 @@ def on_join(data):
 					room_name = room_name[0:2] + "0" + str(int(room_name[2:4]) + 1)
 				else:
 					room_name = room_name[0:2] + str(int(room_name[2:4]) + 1)
+
+				# adding user to room
 				if room_name not in r:
 					r[room_name] = [1, False, list()]
 					r[room_name][2].append(str(current_user.username))
@@ -110,9 +117,14 @@ def on_join(data):
 	# if the room is full then the game starts
 	if r[room_name][0] == int(room_name[0]):
 		r[room_name][1] = True
-		r[room_name][2].append(str(current_user.username))
 		join_room(room_name)
-		socketio.emit("listener", "join" + get_sentence(room_name[1]), room=room_name)
+
+		# sending all users in room
+		usernames = ""
+		for x in range(len(r[room_name][2])):
+			usernames += r[room_name][2][x] + "|"
+
+		socketio.emit("listener", usernames + "join" + get_sentence(room_name[1]), room=room_name)
 
 
 @app.route("/waiting/<ID>")
@@ -131,9 +143,8 @@ def get_room(data):
 	room = data['room name']
 	username = data['username']
 
-	#print("trying to get room: " + request.sid)
-	#print("trying to get room: " + username)
-	if request.sid != u[username]:
+	# making sure the player doesent enter twice
+	if request.sid != u[username] and current_user.username not in r[roomName][2]:
 		return
 
 
@@ -154,6 +165,7 @@ def get_room(data):
 	socketio.emit("room asign", room, room=request.sid)
 
 
+# this function sends the place of each racer to his room
 @socketio.on('selector')
 def connect(data):
 	room_name = data['room name']
@@ -165,9 +177,7 @@ def connect(data):
 def exit(data):
 
 	roomName = data['room name']
-	#print(current_user.username + " is leaving room " + roomName)
 	leave_room(roomName)
-	#socketio.emit("listener", roomName, room=roomName)
 
 
 @socketio.on('finish')
@@ -177,7 +187,6 @@ def finish(data):
 	roomName = data['room name']
 
 	# decreasing the amount of players in room
-	#leave_room(roomName)
 	r[roomName][0] = r[roomName][0] - 1
 	if r[roomName][0] == 0:
 		close_room(roomName)
