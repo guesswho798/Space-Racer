@@ -61,9 +61,9 @@ def about():
 	return redirect(url_for('home'))
 
 @socketio.on('connect')
+@login_required
 def connect():
 	u[current_user.username] = request.sid
-	#print(u)
 	emit("listener", 'connected')
 
 @socketio.on('join')
@@ -72,6 +72,11 @@ def on_join(data):
 
 	room_name = data['room name']
 	username = data['username']
+	practice = data['practice']
+
+	if practice:
+		socketio.emit("practice", get_sentence("r"), room=request.sid)
+		return
 
 	# if the room exists
 	if room_name in r:
@@ -146,7 +151,6 @@ def get_room(data):
 	# making sure the player doesent enter twice
 	if request.sid != u[username] and current_user.username not in r[roomName][2]:
 		return
-
 
 	while(True):
 		if room in r:
@@ -254,34 +258,50 @@ def logout():
 
 def get_sentence(mode):
 
+	n = random.randint(0, 15)
 	if mode == 'z':
 
-		n = random.randint(0, 4)
-
-		if n == 0:
-			return "Sometimes you have to just give up and win by cheating"
-		if n == 1:
-			return "All you need to do is pick up the pen and begin"
-		if n == 2:
-			return "Today arrived with a crash of my car through the garage door"
-		if n == 3:
-			return "As he entered the church he could hear the soft voice of someone whispering into a cell phone"
-
-		return "He appeared to be confusingly perplexed"
+		choices = {
+			0: "Sometimes you have to just give up and win by cheating",
+			1: "All you need to do is pick up the pen and begin",
+			2: "Today arrived with a crash of my car through the garage door",
+			3: "As he entered the church he could hear the soft voice of someone whispering into a cell phone",
+			4: "He appeared to be confusingly perplexed",
+			5: "You have every right to be angry, but that doesn't give you the right to be mean",
+			6: "When nobody is around, the trees gossip about the people who have walked under them",
+			7: "The random sentence generator generated a random sentence about a random sentence",
+			8: "You're good at English when you know the difference between a man eating chicken and a man-eating chicken",
+			9: "The sign said there was road work ahead so he decided to speed up",
+			10: "The secret ingredient to his wonderful life was crime",
+			11: "I can practically see your face and another revolutionary falls from grace",
+			12: "I've found it. I've found it. I have found a reagent which is precipitated by hemoglobin, and by nothing else.",
+			13: "The lyrics of the song sounded like fingernails on a chalkboard",
+			14: "Whether this tale be true or false, none can tell, for none were there to witness it themselves",
+			15: "The best key lime pie is still up for debate"
+		}
+		return choices.get(n)
 
 	elif mode == 'r':
-		n = random.randint(0, 4)
 
-		if n == 0:
-			return "As he crossed toward the pharmacy at the corner he involuntarily turned his head because of a burst of light that had ricocheted from his temple, and saw, with that quick smile with which we greet a rainbow or a rose, a blindingly white parallelogram of sky"
-		if n == 1:
-			return "On offering to help the blind man, the man who then stole his car, had not, at that precise moment, had any evil intention, quite the contrary, what he did was nothing more than obey those feelings of generosity and altruism"
-		if n == 2:
-			return "My very photogenic mother died in a freak accident (picnic, lightning) when I was three, and, save for a pocket of warmth in the darkest past, nothing of her subsists within the hollows and dells of memory, over which, if you can still stand my style"
-		if n == 3:
-			return "The French are certainly misunderstood: - but whether the fault is theirs, in not sufficiently explaining themselves, or speaking with that exact limitation and precision which one would expect on a point of such importance"
-
-		return "All I know is that I stood spellbound in his high-ceilinged studio room, with its north-facing windows in front of the heavy mahogany bureau at which Michael said he no longer worked because the room was so cold, even in midsummer"
+		choices = {
+			0: "As he crossed toward the pharmacy at the corner he involuntarily turned his head because of a burst of light that had ricocheted from his temple",
+			1: "On offering to help the blind man, the man who then stole his car, had not, at that precise moment, had any evil intention, quite the contrary",
+			2: "My very photogenic mother died in a freak accident (picnic, lightning) when I was three, and, save for a pocket of warmth in the darkest past",
+			3: "The French are certainly misunderstood: but whether the fault is theirs, in not sufficiently explaining themselves, or speaking with that exact limitation",
+			4: "All I know is that I stood spellbound in his high-ceilinged studio room, with its north-facing windows in front of the heavy mahogany bureau at which Michael said he no longer worked because the room was so cold, even in midsummer",
+			5: "Mac knew the score even if Aunt Ella didn't. Shot through the left lung and that was that, as they say. Believe it was that night. She buried him the next mornin'",
+			6: "She was a genius of sadness, immersing herself in it, separating its numerous strands, appreciating its subtle nuances. She was a prism through which sadness could be divided into its infinite spectrum",
+			7: "I learned to write because I am one of those people who somehow cannot manage the common communications of smiles and gestures, but must use words to get across things that other people would never need to say",
+			8: "Whether they use the title or not, many lyrics have evocative first lines that grab the listener's attention. Often thinking of a good first line can make the rest of the lyric flow",
+			9: "I am assured by our merchants, that a boy or a girl before twelve years old, is no salable commodity, and even when they come to this age, they will not yield above three pounds, or three pounds and half a crown at most, on the exchange",
+			10: "Heraclitus: \"They vainly purify themselves with blood when they are defiled with it, which is like someone who has stepped into mud using mud to wash himself. Anyone who observed a person doing this would think him mad\"",
+			11: "I've been up. I've been down. I've been kicked down to the ground by the voices in my head. But you said, \"Life gets tough when you get older. That's why I raised a soldier. Fight this battle to the end\"",
+			12: "Consciousness, complex and subtle, can be impaired or ended by a mere stepping-up or dimming-down of any one sense intensity, which is the procedure in hypnosis",
+			13: "It wasn't something that I thought about, but I knew that you were absolute in doubt. I just really wanna talk to you again, that's how I know that I'ma haunt you in the end. It wasn't something 'til you brought it up, I knew that you were tryna make it out",
+			14: "Dictionaries are designed to appear authoritative. They're thick, sturdy, and precise, with pages of explanatory material and complex notational schemes that create an aura of august finality",
+			15: "It doesn't matter what I say, so long as I sing with inflection that makes you feel I'll convey some inner truth or vast reflection. But I've said nothing so far"
+		}
+		return choices.get(n)
 
 	elif mode == 'c':
 		n = random.randint(0, 4)

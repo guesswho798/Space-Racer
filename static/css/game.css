@@ -63,7 +63,8 @@ img {
   margin-top: 20px;
 }
 
-#back{
+.b{
+  cursor: pointer
   position: static;
   color: red;
   background: #0C1035;
@@ -72,6 +73,7 @@ img {
   padding: 10px;
   display: inline-block;
   margin-top: 50px;
+  margin-left: 20px;
   cursor: pointer;
   z-index: 99999;
 }
@@ -100,9 +102,9 @@ img {
   position: absolute;
   bottom: 100%;
   width: 120px;
-  height: 5px;
+  height: 4px;
   pointer-events: none;
-  animation: drop 0.5s linear infinite;
+  animation: drop 5s linear infinite;
 }
 
 @keyframes drop {
@@ -118,11 +120,11 @@ img {
 }
 
 .stem {
-  height: 1px;
+  height: 4px;
   width: 60%;
   margin-right: 7px;
   background: linear-gradient(to left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.25));
-  animation: stem 0.5s linear infinite;
+  animation: stem 5s linear infinite;
 }
 
 @keyframes stem {

@@ -20,6 +20,8 @@
             
             if(number == "guess")
                window.location.href = "https://guesswho798.github.io/";
+            else if (number == "practice")
+               window.location.href = "/waiting/practice";
             else
                socket.emit("get room", {"room name": number, "username": document.getElementById("username").innerHTML});
          }
@@ -66,7 +68,7 @@
             <div class="inner-grid-item" onclick="func('2c00')" style="cursor: pointer">1V1<br>Classical</div>
             <div class="inner-grid-item" onclick="func('3c00')" style="cursor: pointer">1V1V1<br>Classical</div>
             <div class="inner-grid-item" onclick="func('4c00')" style="cursor: pointer">2V2<br>Classical</div>
-            <div class="inner-grid-item" onclick="func('add later')" style="cursor: pointer">Endless<br>Practice</div>
+            <div class="inner-grid-item" onclick="func('practice')" style="cursor: pointer">Endless<br>Practice</div>
             <div class="inner-grid-item" onclick="func('add later')" style="cursor: pointer">Private<br>Match</div>
             <div class="inner-grid-item" id="yellow" onclick="func('guess')">Type<br>Racer</div>
          </div>

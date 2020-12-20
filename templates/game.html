@@ -8,6 +8,7 @@
 <body>
 
   <p id="username" hidden>{{username}}</p>
+  <p id="id" hidden>{{ID}}</p>
 
   <div id="wait">
     <div id='stars'></div>
@@ -39,7 +40,10 @@
       var t0 = null;
 
       socket.on('connect', function() {
-        socket.emit('join', {'username': username, "room name": window.location.pathname.slice(9)});
+        if (document.getElementById("id").innerHTML != "practice")
+          socket.emit('join', {'username': username, "room name": window.location.pathname.slice(9), "practice": false});
+        else
+          socket.emit('join', {'username': username, "room name": window.location.pathname.slice(9), "practice": true});
       });
       
       socket.on('selector sender', function(data) {
@@ -72,6 +76,111 @@
           document.getElementById(data['username'] + "end").innerHTML = place + "th place";
           place++;
         }
+      });
+
+        socket.on('practice', function(data) {
+
+          if (document.getElementById("racerw") == undefined) {
+
+            sentence = data;
+            document.getElementById("white").innerHTML = sentence;
+            document.getElementById("green").innerHTML = "";
+            document.getElementById(username + "end").innerHTML = "";
+            document.getElementById("back").innerHTML = "abandon ship!";
+            document.getElementById("rnb").style.display = 'block';
+            document.getElementById("rnf").style.display = 'block';
+            document.getElementById("again").remove();
+            selector = 0;
+            document.getElementById("t").disabled = false;
+            document.getElementById("car1").style.margin = '0px';
+
+            // starting to count time to calculate time
+            t0 = performance.now();
+            play = true;
+          }
+          else{
+            // loading picture
+            var pictureName = "{{ url_for('static', filename='images/ships1.png') }}";
+            var pictureWidth = "80px";
+            var pictureHeight = "40px";
+  
+            // adding elements
+            var p = document.getElementById("racerw");
+            var h = document.createElement("h1");
+            // spaceship 1 & 2
+            var name1 = document.createElement('p');
+            var img1 = document.createElement('img');
+            var endname1 = document.createElement('p');
+            var b1 = document.createElement("br");
+            var b2 = document.createElement("br");
+  
+            // green and white text, input bar and exit button
+            var w = document.createElement("p");
+            var g = document.createElement("p");
+            var b3 = document.createElement("br");
+            var t = document.createElement("input");
+            var b4 = document.createElement("br");
+            var back = document.createElement('div');
+  
+            // setting attributes of elements
+            w.setAttribute('id', "white");
+            g.setAttribute('id', "green");
+            t.setAttribute('id', "t");
+            t.setAttribute('autocomplete', "off");
+            back.setAttribute('class', "b");
+            back.setAttribute('id', "back");
+            back.setAttribute('onclick', "back()");
+    
+            // setting values
+            h.innerHTML = "Type Racer";
+            sentence = data;
+            w.innerHTML = sentence;
+            g.innerHTML = "";
+            back.innerHTML = "abandon ship!";
+  
+            // setting ids
+            p.setAttribute('id', "racer");
+            img1.setAttribute('id', "car1");
+            name1.setAttribute('class', "name");
+            endname1.setAttribute('class', "name");
+            endname1.setAttribute('id', username + "end");
+            name1.innerHTML = username;
+            img1.src = pictureName;
+            img1.style.width = pictureWidth;
+            img1.style.height = pictureHeight;
+  
+            // background
+            var rf = document.getElementById("rnf");
+            var rb = document.getElementById("rnb");
+            rf.setAttribute('class', "rain front-row");
+            rb.setAttribute('class', "rain back-row");
+            makeItRain();
+  
+  
+            // adding to div
+            p.appendChild(h);
+            p.appendChild(name1);
+            p.appendChild(img1);
+            p.appendChild(endname1);
+            p.appendChild(b1);
+            p.appendChild(b2);
+            p.appendChild(g);
+            p.appendChild(w);
+            p.appendChild(b3);
+            p.appendChild(t);
+            p.appendChild(b4);
+            p.appendChild(back);
+  
+            // get elements
+            var parent = document.getElementById("wait");
+  
+            // Delete elements
+            parent.remove();
+  
+            // starting to count time to calculate time
+            t0 = performance.now();
+            play = true;
+          }
       });
 
       // listener function to log everything the server sends
@@ -251,9 +360,6 @@
           // Delete elements
           parent.remove();
 
-          // setting the space ships to the same x value
-
-
           // starting to count time to calculate time
           t0 = performance.now();
           play = true;
@@ -324,10 +430,11 @@ function check_Word(t) {
 
     // advancing the word selector
     selector = selector + 1;
-    // sending server information
-    socket.emit('selector', {'username': username, "room name": window.location.pathname.slice(9)});
+    if (document.getElementById("id").innerHTML != "practice") {
+      // sending server information
+      socket.emit('selector', {'username': username, "room name": window.location.pathname.slice(9)});
+    }
 
-    //console.log(selector / sentence.split(' ').length);
     document.getElementById('car1').style.margin = '0 0 0 ' + 65*selector/sentence.split(' ').length+'%';
     // clearing the input bar
     input_box.value = '';
@@ -352,21 +459,33 @@ function check_Word(t) {
 
     // calculating time
     var totalTime = sentence.split(' ').length/(Math.floor((performance.now() - t0)/1000)/60);
-    socket.emit('finish', {"wpm":totalTime, "room name": window.location.pathname.slice(9)});
-    document.getElementById(username + "end").innerHTML = place + "th place<br>(" + Math.round(totalTime) + " WPM)";
-    place++;
-
-    document.getElementById("rnb").remove();
-    document.getElementById("rnf").remove();
-    document.getElementById("t").remove();
-    document.getElementById("white").remove();
-    document.getElementById("back").innerHTML = "Back To Lobby";
-    play = false;
+    if (document.getElementById("id").innerHTML != "practice"){
+      socket.emit('finish', {"wpm":totalTime, "room name": window.location.pathname.slice(9)});
+      document.getElementById(username + "end").innerHTML = place + "th place<br>(" + Math.round(totalTime) + " WPM)";
+      place++;
+    }else{
+      document.getElementById(username + "end").innerHTML = "(" + Math.round(totalTime) + " WPM)";
+      var again = document.createElement('div');
+      again.setAttribute('class', "b");
+      again.setAttribute('id', "again");
+      again.setAttribute('onclick', "again()");
+      again.innerHTML = "Again!";
+      document.getElementById("racer").appendChild(again);
+    }
+      
+      // hiding elements when done typing
+      document.getElementById("rnb").style.display = 'none';
+      document.getElementById("rnf").style.display = 'none';
+      document.getElementById("back").innerHTML = "Back To Lobby";
+      play = false;
   }
 }
 
+function again(){
+  socket.emit('join', {'username': username, "room name": window.location.pathname.slice(9), "practice": true});
+}
+
 function back(){
-  //alert("sending");
   socket.emit('exit', {"room name": window.location.pathname.slice(9)});
   window.location.href="{{ url_for('home') }}";
 }
