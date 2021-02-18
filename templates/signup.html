@@ -24,6 +24,14 @@
     	{{form.password}}
     	<br><br>
     	<button class="btn btn-lg btn-primary btn-block" type="submit">Signup</button>
+
+      {% if error == "error" %}
+        <div class="error">Sorry, that username, email or password are invalid.</div>
+      {% endif %}
+
+      {% if error == "pass" %}
+        <div class="success">Signup operation completed successfully.</div>
+      {% endif %}
   	</form>
 </body>
 </html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Spacer Racer: Home</title>
+      <link rel="shortcut icon" href="/static/images/shuttle.ico" type="image/x-icon">
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/lobby.css') }}">
+      <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+      <script type="text/javascript" charset="utf-8">
+
+         // socket
+         var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+         // listener function to log everything the server sends
+         socket.on('listener', function(data) {
+            //console.log(data);
+         });
+      </script>
+   </head>
+   <body>
+      <p id="username" hidden>{{username}}</p>
+
+      <ul id="nav">
+         <li id="nav-item"><a href="#" id="nav-a">About</a></li>
+         {% if username %}
+            <li id="nav-item"><a href="{{ url_for('logout') }}" id="nav-a">Logout</a></li>
+            <li id="nav-item"><a href="{{ url_for('profile') }}" id="nav-a">{{username}}</a></li>
+         {% else %}
+            <li id="nav-item"><a href="{{ url_for('profile') }}" id="nav-a">Login</a></li>
+            <li id="nav-item"><a href="{{ url_for('signup') }}" id="nav-a">Signup</a></li>
+         {% endif %}
+         <li id="nav-item"><a href="{{ url_for('home') }}" id="nav-a">Home</a></li>
+      </ul>
+      
+      <br><br>
+      <h1 style="margin-top: 2%">About page</h1>
+      <p>My name is Raz Shneider, and I am a student in Ort Shapira high school,</p>
+      <p>Some of my intersts include: solving a rubix cube, playing chess and mechanical keyboards.</p>
+      <br>
+      <p>I enjoy typing a lot, and that's why I tend to use sites like Type racer a lot.</p>
+      <p>But the more I use them the more I notice a lot of missing features and thats why I decided to build a typing website as my year project.</p>
+      <br>
+      <p>This project is constructed in mind of the numerous faults that I found on many other sites, which is why I think that this project has a lot to offer.</p>
+
+      <footer>
+         <p>&copy; Raz Shneider. All rights reserved.</p>
+      </footer>
+
+   </body>
+</html>

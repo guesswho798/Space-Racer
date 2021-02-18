@@ -101,3 +101,12 @@ canvas {
     top:0;
     left:0
 }
+
+footer {
+  position: absolute;
+  width: 100%;
+  padding: 0px 20px;
+  bottom: 0px;
+  background: #666;
+  color: white;
+}

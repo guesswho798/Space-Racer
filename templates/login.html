@@ -24,6 +24,13 @@
     	{{form.remember}}
     	<br><br>
     	<button class="btn btn-lg btn-primary btn-block" type="submit">Log in</button>
+      {% if error == "error" %}
+        <div class="error">Sorry, that username or password are invalid.</div>
+      {% endif %}
+
+      {% if error == "pass" %}
+        <div class="success">Login operation completed successfully.</div>
+      {% endif %}
   	</form>
 </body>
 </html>
