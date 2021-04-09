@@ -7,7 +7,6 @@
 </head>
 <body>
     <ul id="nav">
-         <li id="nav-item"><a href="{{ url_for('about') }}" id="nav-a">About</a></li>
          <li id="nav-item"><a href="{{ url_for('home') }}" id="nav-a">Home</a></li>
     </ul>
     <br><br>
@@ -18,7 +17,9 @@
     	{{form.username}}
     	<br>
     	<h3>Email</h3>
+      <div id="mail">
     	{{form.email}}
+      </div>
     	<br>
     	<h3>Password</h3>
     	{{form.password}}

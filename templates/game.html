@@ -27,9 +27,11 @@
   <head>
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
     <script>
-
-
-      var socket = io.connect('http://' + document.domain + ':' + location.port);
+      var protocol='http';
+      if (location.protocol === 'https:') {
+        protocol='https';
+      }
+      var socket = io.connect(protocol+'://' + document.domain + ':' + location.port);
       var play = false;
       var selector = 0;
       var opponentSelector = {};
@@ -89,7 +91,8 @@
             document.getElementById("back").innerHTML = "abandon ship!";
             document.getElementById("rnb").style.display = 'block';
             document.getElementById("rnf").style.display = 'block';
-            document.getElementById("again").remove();
+            if (document.getElementById("again") != null)
+              document.getElementById("again").remove();
             selector = 0;
             document.getElementById("t").disabled = false;
             document.getElementById("car1").style.margin = '0px';
@@ -149,13 +152,6 @@
             img1.style.width = pictureWidth;
             img1.style.height = pictureHeight;
   
-            // background
-            var rf = document.getElementById("rnf");
-            var rb = document.getElementById("rnb");
-            rf.setAttribute('class', "rain front-row");
-            rb.setAttribute('class', "rain back-row");
-            makeItRain();
-  
   
             // adding to div
             p.appendChild(h);
@@ -185,8 +181,6 @@
 
       // listener function to log everything the server sends
       socket.on('listener', function(data) {
-
-        //console.log(data);
         //console.log(document.getElementById("users").innerHTML);
         
         if (data.length > 10){
@@ -308,13 +302,6 @@
             img4.style.height = pictureHeight;
           }
 
-          // background
-          var rf = document.getElementById("rnf");
-          var rb = document.getElementById("rnb");
-          rf.setAttribute('class', "rain front-row");
-          rb.setAttribute('class', "rain back-row");
-          makeItRain();
-
 
           // adding to div
           p.appendChild(h);
@@ -367,33 +354,6 @@
         }
       });
 
-// animation
-var makeItRain = function() {
-  //clear out everything
-  //document.getElementsByClassName('.rain').empty();
-
-  var increment = 0;
-  var drops = "";
-  var backDrops = "";
-
-  while (increment < 50) {
-    //couple random numbers to use for various randomizations
-    //random number between 98 and 1
-    var randoHundo = (Math.floor(Math.random() * (98 - 1 + 1) + 1));
-    //random number between 5 and 2
-    var randoFiver = (Math.floor(Math.random() * (5 - 2 + 1) + 2));
-    //increment
-    increment += randoFiver;
-
-    //add in a new raindrop with various randomizations to certain CSS properties
-    drops += '<div class="drop" style="right: -25%; top: ' + (randoHundo) + '%; animation-delay: 0.' + randoFiver*2 + 's; animation-duration: 1s;"><div class="stem" style="animation-delay: 0.' + randoHundo + 's; animation-duration: 0.5' + randoHundo + 's;"></div></div>';
-
-    backDrops += '<div class="drop" style="right: -25%; top: ' + (randoHundo) + '%; animation-delay: 0.' + randoFiver*2 + 's; animation-duration: 1s;"><div class="stem" style="animation-delay: 0.' + randoHundo + 's; animation-duration: 0.5' + randoHundo + 's;"></div></div>';
-  }
-
-  document.getElementById('rnf').innerHTML += drops;
-  document.getElementById('rnb').innerHTML += backDrops;
-}
 
 setInterval(function () {
   if(play == false)
@@ -415,7 +375,6 @@ setInterval(function () {
 }, 1);
 
 document.body.onkeypress = function (e) {
-
   // checking answer after the space bar is pressed
   if (e.keyCode == 32 && play == true) {
     check_Word(t);
@@ -427,7 +386,40 @@ function check_Word(t) {
   var input_box = document.getElementById("t");
 
   // checking if the input is the same as the focused word
-  if (input_box.value == sentence.split(' ')[selector]) {
+  var right = false;
+  var last_letter = sentence.split(' ')[selector][input_box.value.length];
+  if (input_box.value == sentence.split(' ')[selector])
+    right = true;
+  if (input_box.value.length + 1 == sentence.split(' ')[selector].length) {
+    switch(last_letter) {
+      case ".":
+        right = true;
+        break;
+      case ",":
+        right = true;
+        break;
+      case "'":
+        right = true;
+        break;
+      case '"':
+        right = true;
+        break;
+      case ":":
+        right = true;
+        break;
+      case ";":
+        right = true;
+        break;
+      case ")":
+        right = true;
+        break;
+      case "(":
+        right = true;
+        break;
+    }
+  }
+
+  if (right) {
 
     // advancing the word selector
     selector = selector + 1;

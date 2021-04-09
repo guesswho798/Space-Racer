@@ -16,6 +16,13 @@ from sentences import *
 r = {}
 u = {}
 
+
+#
+# client id: 995559895832-q4tq4cg9qo3ao4figumeg4tehd1jnko0.apps.googleusercontent.com
+# client secret: ZyXzJ-5e2_pHwuJGRio7Z3u9
+#
+
+
 @login_manager.user_loader
 def load_user(user_id):
 	return User.query.get(int(user_id))
@@ -29,7 +36,7 @@ def home():
 
 @app.route('/about')
 def about():
-	return render_template("about.html", username=current_user.username)
+	render_template("home.html", f=top[0].username + ", " + str(int(top[0].average)) + " WPM" , s=top[1].username + ", " + str(int(top[1].average)) + " WPM", t=top[2].username + ", " + str(int(top[2].average)) + " WPM")
 
 @socketio.on('connect')
 @login_required
@@ -45,7 +52,7 @@ def on_join(data):
 	username = data['username']
 	practice = data['practice']
 
-	if practice:
+	if practice == True:
 		socketio.emit("practice", get_sentence("r"), room=request.sid)
 		return
 
@@ -206,7 +213,7 @@ def login():
 		if user:
 			if check_password_hash(user.password, form.password.data):
 				login_user(user, remember=form.remember.data)
-				return render_template('login.html', form=form, error="pass")
+				return redirect(url_for('home'))
 		
 		return render_template('login.html', form=form, error="error")
 
