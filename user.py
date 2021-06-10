@@ -30,10 +30,11 @@ google = oauth.register(
 )
 
 class User(UserMixin, db.Model):
-	id = db.Column(db.Integer, primary_key=True)
-	username = db.Column(db.String(15), unique=True)
-	email = db.Column(db.String(50), unique=True)
-	password = db.Column(db.String(80))
-	wpm = db.Column(db.String(80))
-	total = db.Column(db.Integer)
-	average = db.Column(db.Integer)
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(15), unique=True)
+    email = db.Column(db.String(50), unique=True)
+    password = db.Column(db.String(80))
+    sound = db.Column(db.Boolean, default=False)
+    wpm = db.Column(db.String(80))
+    total = db.Column(db.Integer)
+    average = db.Column(db.Integer)
