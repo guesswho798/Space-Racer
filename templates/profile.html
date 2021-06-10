@@ -8,8 +8,8 @@
 </head>
    <body>
    	<ul id="nav">
-          <li id="nav-item"><a href="{{ url_for('logout') }}" id="nav-a">Logout</a></li>
-         <li id="nav-item"><a href="{{ url_for('home') }}" id="nav-a">Home</a></li>
+      <li id="nav-item"><a href="{{ url_for('logout') }}" id="nav-a">Logout</a></li>
+      <li id="nav-item"><a href="{{ url_for('home') }}" id="nav-a">Home</a></li>
     </ul>
     <br><br>
 
@@ -18,17 +18,33 @@
     	<h2>{{username}}</h2>
     	<h2>WPM: <b id="wpm">{{avg}}</b></h2>
     	<h2>Races complete: {{total}}</h2>
+      {% if sound == False %}
+        <h2 id="checkboxtext">Make sound on error:</h2><input type="checkbox" id="box" onclick="check()">
+      {% else %}
+        <h2 id="checkboxtext">Make sound on error:</h2><input type="checkbox" id="box" onclick="check()" checked>
+      {% endif %}
     </div>
     <div id="curve_chart"></div>
     <p id="inv">{{wpm}}</p>
 </body>
 <head>
-  <script type="text/javascript">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+
+    var protocol='http';
+    if (location.protocol === 'https:') {
+      protocol='https';
+    }
+    var socket = io.connect(protocol+'://' + document.domain + ':' + location.port);
 
     var w = document.getElementById("inv").innerHTML.split(" ");
     if (w.length != 0) {
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);
+    }
+
+    function check(){
+      socket.emit('sound', {'check': document.getElementById("box").checked});
     }
 
     function drawChart() {

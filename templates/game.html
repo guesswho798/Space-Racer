@@ -9,6 +9,7 @@
 
   <p id="username" hidden>{{username}}</p>
   <p id="id" hidden>{{ID}}</p>
+  <p id="sound" hidden>{{sound}}</p>
 
   <div id="wait">
     <div id='stars'></div>
@@ -37,9 +38,12 @@
       var opponentSelector = {};
       var sentence = "";
       var username = document.getElementById("username").innerHTML;
-      var users;
+      var users = [];
       var place = 1;
       var t0 = null;
+      var soundon = document.getElementById("sound").innerHTML;
+      var beepsound = new Audio('https://www.soundjay.com/buttons/sounds/beep-07a.mp3');
+      
 
       socket.on('connect', function() {
         if (document.getElementById("id").innerHTML != "practice")
@@ -51,25 +55,42 @@
       socket.on('selector sender', function(data) {
 
         // setting the cars names
-        if (document.getElementById('car2') != null)
-          if (users[0] == username) 
+        if (users.length == 2 && document.getElementById('car2') != null){
+          if (users[0] == username){
            document.getElementById('car2').setAttribute('id', users[1]);
-          else
+          }
+          else{
            document.getElementById('car2').setAttribute('id', users[0]);
-        if (users.length > 3 && document.getElementById('car3') != null)
-          if (users[1] == username) 
-           document.getElementById('car2').setAttribute('id', users[2]);
-          else
+          }
+        }
+        if (users.length == 3 && document.getElementById('car3') != null){
+          //console.log(document.getElementById(users[0]));
+          //console.log(document.getElementById(users[1]));
+          //console.log(document.getElementById(users[2]));
+
+          if (users[0] == username){
            document.getElementById('car2').setAttribute('id', users[1]);
+          }
+          else{
+           document.getElementById('car2').setAttribute('id', users[0]);
+          }
 
+          if (document.getElementById(users[0]) == null && users[0] != username) {
+           document.getElementById('car3').setAttribute('id', users[0]);
+          }
+          else if (document.getElementById(users[1]) == null && users[1] != username){
+           document.getElementById('car3').setAttribute('id', users[1]);
+          }
+          else if (document.getElementById(users[2]) == null && users[2] != username){
+           document.getElementById('car3').setAttribute('id', users[2]);
+          }
+        }
 
-        // why do i keep them seperate?
         if (data['username'] != username) {
           if (opponentSelector[data['username']] == null) 
             opponentSelector[data['username']] = 1;
           else
             opponentSelector[data['username']] = opponentSelector[data['username']] + 1;
-          
 
           document.getElementById(data['username']).style.margin = '0 0 0 ' + 65*opponentSelector[data['username']]/sentence.split(' ').length+'%';
         }
@@ -88,7 +109,7 @@
             document.getElementById("white").innerHTML = sentence;
             document.getElementById("green").innerHTML = "";
             document.getElementById(username + "end").innerHTML = "";
-            document.getElementById("back").innerHTML = "abandon ship!";
+            document.getElementById("back").innerHTML = "ABANDON SHIP!";
             document.getElementById("rnb").style.display = 'block';
             document.getElementById("rnf").style.display = 'block';
             if (document.getElementById("again") != null)
@@ -179,10 +200,17 @@
           }
       });
 
+      socket.on('done', function(data) {
+        if (data["username"] != username)
+          document.getElementById(data['username'] + "end").innerHTML += "<br>(" + parseInt(data["wpm"], 10) + " WPM)";
+      });
+
       // listener function to log everything the server sends
       socket.on('listener', function(data) {
         //console.log(document.getElementById("users").innerHTML);
         
+        //console.log(data);
+
         if (data.length > 10){
 
           // loading pictures
@@ -245,10 +273,13 @@
           back.setAttribute('onclick', "back()");
   
           // setting values
-          h.innerHTML = "Type Racer";
+          h.innerHTML = "Space Racer";
           sentence = data.split("|join")[1];
           w.innerHTML = sentence;
-          users = data.split('|');
+          var newusers = data.split('|');
+          for (var i = 0; i < newusers.length - 1; i++) {
+            users[i] = newusers[i];
+          }
           g.innerHTML = "";
           back.innerHTML = "abandon ship!";
 
@@ -278,7 +309,14 @@
           img2.style.height = pictureHeight;
           if (window.location.pathname.slice(9,10) == "3") {
             name3.setAttribute('class', "name");
-            name3.innerHTML = users[2];
+            if (users[2] == username){
+              name3.innerHTML = users[1];
+              endname3.setAttribute('id', users[1] + "end");
+            }
+            else{
+              name3.innerHTML = users[2];
+              endname3.setAttribute('id', users[2] + "end");
+            }
             endname3.setAttribute('class', "name");
             img3.setAttribute('id', "car3");
             img3.src = pictureName1;
@@ -353,8 +391,7 @@
           play = true;
         }
       });
-
-
+    
 setInterval(function () {
   if(play == false)
     return;
@@ -366,8 +403,12 @@ setInterval(function () {
 
   // cheking each letter and letting the user know he made a mistake
   if (document.getElementById("t").value.length != 0)
-    if (sentence.split(' ')[selector].slice(0, document.getElementById("t").value.length) != document.getElementById("t").value)
+    if (sentence.split(' ')[selector].slice(0, document.getElementById("t").value.length) != document.getElementById("t").value){
       document.getElementById("t").style.backgroundColor = "red";
+      //console.log(soundon);
+      if (soundon == "True")
+        beepsound.play();
+    }
     else
       document.getElementById("t").style.backgroundColor = "white";
   else
@@ -447,13 +488,13 @@ function check_Word(t) {
 
   // disabling input box if sentence is done
   if (selector == sentence.split(' ').length) {
-    input_box.style.backgroundColor = "white";
+    input_box.style.backgroundColor = "gray";
     input_box.disabled = true;
 
     // calculating time
     var totalTime = sentence.split(' ').length/(Math.floor((performance.now() - t0)/1000)/60);
     if (document.getElementById("id").innerHTML != "practice"){
-      socket.emit('finish', {"wpm":totalTime, "room name": window.location.pathname.slice(9)});
+      socket.emit('finish', {"username":username, "wpm":totalTime, "room name": window.location.pathname.slice(9)});
       document.getElementById(username + "end").innerHTML = place + "th place<br>(" + Math.round(totalTime) + " WPM)";
       place++;
     }else{

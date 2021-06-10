@@ -49,40 +49,30 @@
   <body>
     <p id="username" hidden>{{username}}</p>
     <header>
-      <div class="collapse bg-dark" id="navbarHeader">
-        <div class="container">
-          <div class="row">
-            <div class="col-sm-8 col-md-7 py-4">
-              <h4 class="text-white">About</h4>
-              <p class="text-white">My name is Raz Shneider, and I am a student in Ort Shapira high school,<br>Some of my intersts include: playing chess and mechanical keyboards.<br>This project is constructed in mind of the numerous faults that I found on many other typing sites, which is why I think that my project has a lot to offer.</p>
-            </div>
-            <div class="col-sm-4 offset-md-1 py-4">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+         <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
                {% if username %}
-              <h4 class="text-white">Hey, {{username}}</h4>
-              {% else %}
-              <h4 class="text-white">Menu</h4>
-              {% endif %}
-              <ul class="list-unstyled">
-                {% if username %}
-                  <li><a href="{{ url_for('profile') }}" class="text-white">Profile Page</a></li>
-                  <li><a href="{{ url_for('logout') }}" class="text-white">Logout</a></li>
-                  {% else %}
-                  <li><a href="{{ url_for('profile') }}" class="text-white">Login</a></li>
-                  <li><a href="{{ url_for('signup') }}" class="text-white">Signup</a></li>
-                  {% endif %}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="navbar navbar-dark bg-dark box-shadow">
-        <div class="container d-flex justify-content-between">
-          <strong class="navbar-brand d-flex align-items-center text-warning">Space Racer</strong>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-        </div>
-      </div>
+               <h4 class="mr-1 text-white">Hey, </h4>
+               <h4 class="text-warning">{{username}}</h4>
+               <li>
+                  <a href="{{ url_for('profile') }}" class="ml-5 text-white">Profile Page</a>
+               </li>
+               <li>
+                  <a href="{{ url_for('logout') }}" class="ml-2 text-white">Logout</a>
+               </li>
+               {% else %}
+               <li class="nav-item">
+                 <strong><a class="nav-link text-white ml-5" href="{{ url_for('profile') }}">Log-in</a></strong>
+               </li>
+               <li class="nav-item">
+                 <strong><a class="nav-link text-white ml-5" href="{{ url_for('signup') }}">Sign-up</a></strong>
+               </li>
+               {% endif %}
+            </ul>
+         </div>
+      </nav>
+
     </header>
 
     <main role="main">
@@ -97,8 +87,37 @@
       <div class="album py-5 background1">
         <div class="container">
 
-          <div class="row">
+         <div class="row">
+            <div class="col-md-4 offset-md-2">
+              <div class="card mb-4 box-shadow background2">
+                <img src="https://i.ibb.co/cvqVXF5/ep.png" class="img-fluid" style="width: auto; height: 200px;" alt="Responsive image">
+                <div class="card-body">
+                  <p class="card-text d-flex justify-content-center align-items-center text-white">Private practice</p>
+                  <p class="card-text d-flex justify-content-center align-items-center text-white">Endless practice, solo rapid game</p>
+                  <div class="d-flex justify-content-center align-items-center">
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-success" onclick="func('practice')">Play</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="col-md-4">
+              <div class="card mb-4 box-shadow background2">
+                <div class="card-body">
+                  <strong class="card-text d-flex justify-content-center align-items-center text-white">Top player</strong><br>
+                  <p class="card-text d-flex justify-content-center align-items-center text-white">1. {{first}}</p>
+                  <p class="card-text d-flex justify-content-center align-items-center text-white">2. {{second}}</p>
+                  <p class="card-text d-flex justify-content-center align-items-center text-white">3. {{third}}</p>
+                  <p class="card-text d-flex justify-content-center align-items-center text-white">4. {{fourth}}</p>
+                  <p class="card-text d-flex justify-content-center align-items-center text-white">5. {{fifth}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4 offset-md-2">
               <div class="card mb-4 box-shadow background2">
                 <img src="https://i.ibb.co/WBvdP1v/z2.png" class="img-fluid" style="width: auto; height: 200px;" alt="Responsive image">
                 <div class="card-body">
@@ -126,22 +145,9 @@
                 </div>
               </div>
             </div>
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow background2">
-                <img src="https://i.ibb.co/QdMgpbD/z4.png" class="img-fluid" style="width: auto; height: 200px;" alt="Responsive image">
-                <div class="card-body">
-                  <p class="card-text d-flex justify-content-center align-items-center text-white">1 V 1 V 1 V 1 blits</p>
-                  <p class="card-text d-flex justify-content-center align-items-center text-white">A very short game with three more people.</p>
-                  <div class="d-flex justify-content-center align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-success" onclick="func('4z00')">Play</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-md-4">
+         </div>
+         <div class="row">
+            <div class="col-md-4 offset-md-2">
               <div class="card mb-4 box-shadow background2">
                 <img src="https://i.ibb.co/4WknYxP/r2.png" class="img-fluid" style="width: auto; height: 200px;" alt="Responsive image">
                 <div class="card-body">
@@ -169,22 +175,9 @@
                 </div>
               </div>
             </div>
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow background2">
-                <img src="https://i.ibb.co/vkpQm3s/r4.png" class="img-fluid" style="width: auto; height: 200px;" alt="Responsive image">
-                <div class="card-body">
-                  <p class="card-text d-flex justify-content-center align-items-center text-white">1 V 1 V 1 V 1 Rapid</p>
-                  <p class="card-text d-flex justify-content-center align-items-center text-white">A game with three more people.</p>
-                  <div class="d-flex justify-content-center align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-success" onclick="func('4r00')">Play</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-md-4">
+         </div>
+         <div class="row">
+            <div class="col-md-4 offset-md-2">
               <div class="card mb-4 box-shadow background2">
                 <img src="https://i.ibb.co/N1c92xJ/c2.png" class="img-fluid" style="width: auto; height: 220px;" alt="Responsive image">
                 <div class="card-body">
@@ -212,60 +205,10 @@
                 </div>
               </div>
             </div>
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow background2">
-                <img src="https://i.ibb.co/PxY5Kmj/c4.png" class="img-fluid" style="width: auto; height: 220px;" alt="Responsive image">
-                <div class="card-body">
-                  <p class="card-text d-flex justify-content-center align-items-center text-white">1 V 1 V 1 V 1 Classical</p>
-                  <p class="card-text d-flex justify-content-center align-items-center text-white">A very long game with three more people.</p>
-                  <div class="d-flex justify-content-center align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-success" onclick="func('4c00')">Play</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow background2">
-                <img src="https://i.ibb.co/cvqVXF5/ep.png" class="img-fluid" style="width: auto; height: 200px;" alt="Responsive image">
-                <div class="card-body">
-                  <p class="card-text d-flex justify-content-center align-items-center text-white">Private practice</p>
-                  <p class="card-text d-flex justify-content-center align-items-center text-white">Endless practice, solo rapid game</p>
-                  <div class="d-flex justify-content-center align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-success" onclick="func('practice')">Play</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow background2">
-                <div class="card-body">
-                  <strong class="card-text d-flex justify-content-center align-items-center text-white">Top player</strong><br>
-                  <p class="card-text d-flex justify-content-center align-items-center text-white">1. {{f}}</p>
-                  <p class="card-text d-flex justify-content-center align-items-center text-white">2. {{s}}</p>
-                  <p class="card-text d-flex justify-content-center align-items-center text-white">3. {{t}}</p>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow background2">
-                <img src="https://media.giphy.com/media/J6VAb0JG0FpS29fMuS/giphy.gif" class="img-fluid" style="width: auto; height: 200px;" alt="Responsive image">
-                <div class="card-body">
-                  <p class="card-text d-flex justify-content-center align-items-center text-white">My portfilo website, hosted on Github.</p>
-                  <div class="d-flex justify-content-center align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-success" onclick="func('guess')">Visit</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+         </div>
+       </div>
       </div>
+   </div>
 
     </main>
 
