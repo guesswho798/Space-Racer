@@ -14,6 +14,10 @@ h1 {
   text-align: center;
 }
 
+#checkboxtext {
+  display: inline; 
+}
+
 #top {
   margin-left: 10%;
 }
