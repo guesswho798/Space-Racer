@@ -9,8 +9,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = "gnli^sd*bfl!ids#dbfl@dsf"
-#socketio = SocketIO(app)
-socketio = SocketIO(app,cors_allowed_origins="*")
+socketio = SocketIO(app)
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -30,11 +29,10 @@ google = oauth.register(
 )
 
 class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(15), unique=True)
-    email = db.Column(db.String(50), unique=True)
-    password = db.Column(db.String(80))
-    sound = db.Column(db.Boolean, default=False)
-    wpm = db.Column(db.String(80))
-    total = db.Column(db.Integer)
-    average = db.Column(db.Integer)
+	id = db.Column(db.Integer, primary_key=True)
+	username = db.Column(db.String(15), unique=True)
+	email = db.Column(db.String(50), unique=True)
+	password = db.Column(db.String(80))
+	wpm = db.Column(db.String(80))
+	total = db.Column(db.Integer)
+	average = db.Column(db.Integer)

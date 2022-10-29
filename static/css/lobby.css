@@ -1,46 +1,112 @@
-:root {
-  --jumbotron-padding-y: 3rem;
-}
-
-.jumbotron {
-  padding-top: var(--jumbotron-padding-y);
-  padding-bottom: var(--jumbotron-padding-y);
-  margin-bottom: 0;
-  background-color: #fff;
-}
-@media (min-width: 768px) {
-  .jumbotron {
-    padding-top: calc(var(--jumbotron-padding-y) * 2);
-    padding-bottom: calc(var(--jumbotron-padding-y) * 2);
-  }
-}
-
-body, .background1{
-  background-color: #161512;
-}
-.background2{
+.outer-grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 10px;
   background-color: #262421;
+  padding: 10px;
+  margin-right: 10%;
+  margin-left: 10%;
+  border-radius: 50px;
 }
 
-.jumbotron p:last-child {
-  margin-bottom: 0;
+.outer-grid-container > div {
+  text-align: center;
+  padding: 5px;
+  font-size: 30px;
+  color: #BABABA;
+  margin: 10px;
 }
 
-.jumbotron-heading {
-  font-weight: 300;
+.inner-grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto;
+}
+.inner-grid-item {
+  border-radius: 10px;
+  background: #363430;
+  padding: 10px;
+  margin: 3px;
+  font-size: 30px;
+  text-align: center;
 }
 
-.jumbotron .container {
-  max-width: 40rem;
+.score {
+   grid-area: 1 / 1 / 5 / 1;
+}
+.Main {
+   grid-area: 1 / 2 / 5 / 2;
+}
+.Item3 {
+   grid-area: 1 / 3 / 5 / 3;
+}
+body {
+  text-align: center;
+  background-image: linear-gradient(rgb(47,43,37) 0%, #161512 20%);
+  color: #BABABA;
+  font-family: Helvetica;
+  webkit-user-select: none; /* Safari */        
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
+}
+
+h1, h4 {
+  margin:0;
+  color: #ffcf40;
+}
+
+#yellow {
+  background-color: #ffcf40;
+  color: #262421;
+}
+
+#nav {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#nav-item {
+  display: inline;
+  float: right;
+}
+
+#nav-a {
+  text-decoration: none;
+  color: #738282;
+  display: block;
+  padding: 8px;
+  -webkit-transition: color 0.5s;
+  -moz-transition:    color 0.5s;
+  -ms-transition:     color 0.5s;
+  -o-transition:      color 0.5s;
+  transition:         color 0.5s;
+}
+
+#nav-a:hover {
+  color: #ffffff;
+}
+
+body, html {
+    background-color: #000;
+    color: #fff;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+canvas {
+    position:absolute;
+    top:0;
+    left:0
 }
 
 footer {
-  padding-top: 3rem;
-  padding-bottom: 3rem;
+  position: absolute;
+  width: 100%;
+  padding: 0px 20px;
+  bottom: 0px;
+  background: #666;
+  color: white;
 }
-
-footer p {
-  margin-bottom: .25rem;
-}
-
-.box-shadow { box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05); }

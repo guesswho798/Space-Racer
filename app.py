@@ -17,20 +17,26 @@ r = {}
 u = {}
 
 
+#
+# client id: 995559895832-q4tq4cg9qo3ao4figumeg4tehd1jnko0.apps.googleusercontent.com
+# client secret: ZyXzJ-5e2_pHwuJGRio7Z3u9
+#
+
+
 @login_manager.user_loader
 def load_user(user_id):
 	return User.query.get(int(user_id))
 
 @app.route("/")
 def home():
-	top = User.query.order_by(User.average.desc()).limit(5)
+	top = User.query.order_by(User.average.desc()).limit(3)
 	if current_user.is_authenticated:
-		return render_template("home.html", username=current_user.username, first=top[0].username + ", " + str(int(top[0].average)) + " WPM", second=top[1].username + ", " + str(int(top[1].average)) + " WPM", third=top[2].username + ", " + str(int(top[2].average)) + " WPM", fourth=top[3].username + ", " + str(int(top[3].average)) + " WPM", fifth=top[4].username + ", " + str(int(top[4].average)) + " WPM")
-	return render_template("home.html", first=top[0].username + ", " + str(int(top[0].average)) + " WPM" , second=top[1].username + ", " + str(int(top[1].average)) + " WPM", third=top[2].username + ", " + str(int(top[2].average)) + " WPM", fourth=top[3].username + ", " + str(int(top[3].average)) + " WPM", fifth=top[4].username + ", " + str(int(top[4].average)) + " WPM")
+		return render_template("home.html", username=current_user.username, f=top[0].username + ", " + str(int(top[0].average)) + " WPM", s=top[1].username + ", " + str(int(top[1].average)) + " WPM", t=top[2].username + ", " + str(int(top[2].average)) + " WPM")
+	return render_template("home.html", f=top[0].username + ", " + str(int(top[0].average)) + " WPM" , s=top[1].username + ", " + str(int(top[1].average)) + " WPM", t=top[2].username + ", " + str(int(top[2].average)) + " WPM")
 
 @app.route('/about')
 def about():
-	render_template("home.html", f=top[0].username + ", " + str(int(top[0].average)) + " WPM" , s=top[1].username + ", " + str(int(top[1].average)) + " WPM", t=top[2].username + ", " + str(int(top[2].average)) + " WPM")
+	return render_template("about.html", username=current_user.username)
 
 @socketio.on('connect')
 @login_required
@@ -46,7 +52,7 @@ def on_join(data):
 	username = data['username']
 	practice = data['practice']
 
-	if practice == True:
+	if practice:
 		socketio.emit("practice", get_sentence("r"), room=request.sid)
 		return
 
@@ -106,7 +112,11 @@ def on_join(data):
 @app.route("/waiting/<ID>")
 @login_required
 def waiting(ID):
-	return render_template("game.html", ID=ID, username=current_user.username, sound=current_user.sound)
+
+	if ID == "add later":
+		return "Not finished yet for upload!"
+
+	return render_template("game.html", ID=ID, username=current_user.username)
 
 @socketio.on('get room')
 def get_room(data):
@@ -143,17 +153,6 @@ def connect(data):
 
 	socketio.emit("selector sender", {'username':username}, room=room_name)
 
-# this function saves if the player wants to hear error sound
-@socketio.on('sound')
-def sound(data):
-	value = data['check']
-
-	# adding new values to user
-	user = User.query.filter_by(username=current_user.username).first()
-	user.sound = value
-	db.session.commit()
-
-# this function lets the player leave a games lobby
 @socketio.on('exit')
 def exit(data):
 
@@ -165,10 +164,6 @@ def finish(data):
 
 	wordsPerMinute = data['wpm']
 	roomName = data['room name']
-	username = data['username']
-
-	# sending wpm info to other players
-	socketio.emit("done", {'username':username, "wpm":wordsPerMinute}, room=roomName)
 
 	# decreasing the amount of players in room
 	r[roomName][0] = r[roomName][0] - 1
@@ -195,7 +190,6 @@ def finish(data):
 	user.average = avg
 	db.session.commit()
 
-
 @app.route("/profile")
 @login_required
 def profile():
@@ -208,10 +202,7 @@ def profile():
 	newaverage = current_user.average
 	if current_user.average == None:
 		newaverage = 0
-	newsound = current_user.sound
-	if current_user.sound == None:
-		newsound = False
-	return render_template('profile.html', username=current_user.username, wpm=newwpm, total=newtotal, avg=int(newaverage), sound=newsound)
+	return render_template('profile.html', username=current_user.username, wpm=newwpm, total=newtotal, avg=int(newaverage))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -222,12 +213,11 @@ def login():
 		if user:
 			if check_password_hash(user.password, form.password.data):
 				login_user(user, remember=form.remember.data)
-				return redirect(url_for('home'))
+				return render_template('login.html', form=form, error="pass")
 		
 		return render_template('login.html', form=form, error="error")
 
 	return render_template('login.html', form=form)
-
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -239,7 +229,7 @@ def signup():
 			return render_template('signup.html', form=form, error="error")
 
 		hashed_password = generate_password_hash(form.password.data, method='sha256')
-		new_user = User(username=form.username.data, email=form.email.data, password=hashed_password, wpm="", total=0, sound=False)
+		new_user = User(username=form.username.data, email=form.email.data, password=hashed_password, wpm="", total=0)
 		db.session.add(new_user)
 		db.session.commit()
 		login_user(new_user)
@@ -256,4 +246,4 @@ def logout():
 	return redirect(url_for('home'))
 
 if __name__ == "__main__":
-	socketio.run(app, debug=True)
+	socketio.run(app, debug=False)
